@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 
 const { corsOptions } = require("./config/common");
 const protect = require("./middlewares/auth.middleware");
+const errorMiddleware = require("./middlewares/error.middleware");
 
 const app = express();
 
@@ -49,6 +50,8 @@ app.use((req, res) => {
     message: `Route ${req.originalUrl} not found`,
   });
 });
+
+app.use(errorMiddleware);
 
 // for multer error handling
 // app.use((error, req, res, next) => {

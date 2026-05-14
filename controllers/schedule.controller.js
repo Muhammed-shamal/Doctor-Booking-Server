@@ -1,4 +1,5 @@
 const Schedule = require("../models/Schedule");
+const ApiResponse = require("../utils/apiResponse");
 const generateSlots = require("../utils/generateSlots");
 
 const createSchedule = async (
@@ -21,10 +22,9 @@ const createSchedule = async (
       });
 
     if (existingSchedule) {
-      return res.status(400).json({
-        message:
-          "Schedule already exists for this date"
-      });
+      return res.status(400).json(
+        new ApiResponse(400, "Schedule already exists for this date", null)
+      );
     }
 
     const slots = generateSlots(
@@ -41,14 +41,13 @@ const createSchedule = async (
         slots
       });
 
-    res.status(201).json({
-      success: true,
-      schedule
-    });
+    res.status(201).json(
+      new ApiResponse(201, "Schedule created successfully", { schedule })
+    );
   } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
+    res.status(500).json(
+      new ApiResponse(500, "Failed to create schedule", null)
+    );
   }
 };
 
@@ -64,11 +63,13 @@ const getDoctorSchedules = async (
         date: 1
       });
 
-    res.status(200).json(schedules);
+    res.status(200).json(
+      new ApiResponse(200, "Doctor schedules retrieved successfully", { schedules })
+    );
   } catch (error) {
-    res.status(500).json({
-      message: error.message
-    });
+    res.status(500).json(
+      new ApiResponse(500, "Failed to retrieve doctor schedules", null)
+    );
   }
 };
 

@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const Appointment = require("../models/Appointment");
 
 const Schedule = require("../models/Schedule");
+const ApiResponse = require("../utils/apiResponse");
 
 const bookAppointment = async (req, res) => {
   const session = await mongoose.startSession();
@@ -96,16 +97,17 @@ const bookAppointment = async (req, res) => {
       slotId,
     });
 
-    res.status(201).json({
-      success: true,
-      appointment: appointment[0],
-    });
+    res
+      .status(201)
+      .json(
+        new ApiResponse(201, "Appointment booked successfully", { appointment: appointment[0] }),
+      );
   } catch (error) {
     await session.abortTransaction();
 
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json(
+      new ApiResponse(500, "Failed to book appointment", null)
+    );
   } finally {
     session.endSession();
   }
@@ -121,11 +123,13 @@ const getMyAppointments = async (req, res) => {
         createdAt: -1,
       });
 
-    res.status(200).json(appointments);
+    res.status(200).json(
+      new ApiResponse(200, "Appointments retrieved successfully", { appointments })
+    );
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json(
+      new ApiResponse(500, "Failed to retrieve appointments", null)
+    );
   }
 };
 
@@ -141,14 +145,13 @@ const updateAppointmentStatus = async (req, res) => {
       },
     );
 
-    res.status(200).json({
-      success: true,
-      appointment,
-    });
+    res.status(200).json(
+      new ApiResponse(200, "Appointment status updated successfully", { appointment })
+    );
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json(
+      new ApiResponse(500, "Failed to update appointment status", null)
+    );
   }
 };
 

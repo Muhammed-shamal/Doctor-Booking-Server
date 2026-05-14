@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 
 const User = require("../models/User");
 const generateTokens = require("../utils/generateTokens");
+const ApiResponse = require("../utils/apiResponse");
 
 const isProd = process.env.NODE_ENV === "production";
 const sameSite = isProd ? "None" : "Lax";
@@ -38,21 +39,21 @@ const register = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res.status(201).json({
-      success: true,
-      message: "Account Created Successfully",
-      accessToken,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
+    res.status(201).json(
+      new ApiResponse(201, "User registered successfully", {
+        accessToken,
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      }),
+    );
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json(
+      new ApiResponse(500, "Failed to register user", null)
+    );
   }
 };
 
@@ -87,21 +88,21 @@ const login = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res.status(200).json({
-      success: true,
-      message: "Login Successful",
-      accessToken,
-      user: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    });
+    res.status(200).json(
+      new ApiResponse(200, "Login Successful", {
+        accessToken,
+        user: {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      }),
+    );
   } catch (error) {
-    res.status(500).json({
-      message: error.message,
-    });
+    res.status(500).json(
+      new ApiResponse(500, "Failed to login", null)
+    );
   }
 };
 
@@ -126,15 +127,16 @@ const refresh = async (req, res) => {
 
     res.json({ accessToken });
   } catch {
-    res.status(401).json({ message: "Invalid refresh token" });
+    res.status(401).json(new ApiResponse(401, "Invalid refresh token", null));
   }
 };
 
 const me = async (req, res) => {
-  res.status(200).json({
-    success: true,
-    user: req.user,
-  });
+  res.status(200).json(
+    new ApiResponse(200, "User details retrieved successfully", {
+      user: req.user,
+    })
+  );
 };
 
 const logout = async (req, res) => {
@@ -144,10 +146,9 @@ const logout = async (req, res) => {
     sameSite,
   });
 
-  res.status(200).json({
-    success: true,
-    message: "Logged out successfully",
-  });
+  res.status(200).json(
+    new ApiResponse(200, "Logged out successfully", null)
+  );
 };
 
 module.exports = {
