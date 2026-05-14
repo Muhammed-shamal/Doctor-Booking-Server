@@ -12,10 +12,11 @@ const {
 const protect = require("../middlewares/auth.middleware");
 const { registerValidation, loginValidation } = require("../validators/auth");
 const validate = require("../middlewares/validate.middleware");
+const { authLimiter } = require("../middlewares/rateLimit.middleware");
 
 router.post("/register", registerValidation, validate, register);
 
-router.post("/login", loginValidation, validate, login);
+router.post("/login", authLimiter, loginValidation, validate, login);
 
 router.post("/logout", logout);
 

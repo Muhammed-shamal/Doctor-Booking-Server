@@ -8,60 +8,87 @@ const getDoctors = async (req, res) => {
       page,
       limit,
       search,
-      specialization
+      specialization,
+      minFee,
+      maxFee,
+      minExperience,
     } = req.query;
 
     const filters = {
-      isActive: true
+      isActive: true,
     };
+
+    /*
+        specialization
+      */
 
     if (specialization) {
       filters.specialization = specialization;
     }
 
-    const doctors = await getPaginatedResults(
-      Doctor,
-      {
-        page,
-        limit,
-        search,
-        searchFields: [
-          "name",
-          "specialization"
-        ],
-        filters
-      }
-    );
+    /*
+        fee filtering
+      */
 
-    res.status(200).json(
-      new ApiResponse(200, "Doctors retrieved successfully", { doctors })
-    );
+    if (minFee || maxFee) {
+      filters.consultationFee = {};
+
+      if (minFee) {
+        filters.consultationFee.$gte = Number(minFee);
+      }
+
+      if (maxFee) {
+        filters.consultationFee.$lte = Number(maxFee);
+      }
+    }
+
+    /*
+        experience filtering
+      */
+
+    if (minExperience) {
+      filters.experience = {
+        $gte: Number(minExperience),
+      };
+    }
+
+    const doctors = await getPaginatedResults(Doctor, {
+      page,
+      limit,
+      search,
+      searchFields: ["name", "specialization"],
+      filters,
+    });
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Doctors retrieved successfully", { doctors }),
+      );
   } catch (error) {
-    res.status(500).json(
-      new ApiResponse(500, "Failed to retrieve doctors", null)
-    );
+    res
+      .status(500)
+      .json(new ApiResponse(500, "Failed to retrieve doctors", null));
   }
 };
 
 const getDoctorById = async (req, res) => {
   try {
-    const doctor = await Doctor.findById(
-      req.params.id
-    );
+    const doctor = await Doctor.findById(req.params.id);
 
     if (!doctor) {
-      return res.status(404).json(
-        new ApiResponse(404, "Doctor not found", null)
-      );
+      return res
+        .status(404)
+        .json(new ApiResponse(404, "Doctor not found", null));
     }
 
-    res.status(200).json(
-      new ApiResponse(200, "Doctor retrieved successfully", { doctor })
-    );
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Doctor retrieved successfully", { doctor }));
   } catch (error) {
-    res.status(500).json(
-      new ApiResponse(500, "Failed to retrieve doctor", null)
-    );
+    res
+      .status(500)
+      .json(new ApiResponse(500, "Failed to retrieve doctor", null));
   }
 };
 
@@ -69,34 +96,29 @@ const createDoctor = async (req, res) => {
   try {
     const doctor = await Doctor.create(req.body);
 
-    res.status(201).json(new ApiResponse(201, "Doctor created successfully", { doctor }));
+    res
+      .status(201)
+      .json(new ApiResponse(201, "Doctor created successfully", { doctor }));
   } catch (error) {
-    res.status(500).json(
-      new ApiResponse(500, "Failed to create doctor", null)
-    );
+    res.status(500).json(new ApiResponse(500, "Failed to create doctor", null));
   }
 };
 
 const updateDoctor = async (req, res) => {
   try {
-    const doctor =
-      await Doctor.findByIdAndUpdate(
-        req.params.id,
-        req.body,
-        {
-          new: true
-        }
-      );
+    const doctor = await Doctor.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
 
     if (!doctor) {
-      return res.status(404).json(
-        new ApiResponse(404, "Doctor not found", null)
-      );
+      return res
+        .status(404)
+        .json(new ApiResponse(404, "Doctor not found", null));
     }
 
-    res.status(200).json(
-      new ApiResponse(200, "Doctor updated successfully", { doctor })
-    );
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Doctor updated successfully", { doctor }));
   } catch (error) {
     res.status(500).json(new ApiResponse(500, "Failed to update doctor", null));
   }
@@ -104,22 +126,19 @@ const updateDoctor = async (req, res) => {
 
 const deleteDoctor = async (req, res) => {
   try {
-    const doctor =
-      await Doctor.findByIdAndDelete(
-        req.params.id
-      );
+    const doctor = await Doctor.findByIdAndDelete(req.params.id);
 
     if (!doctor) {
-      return res.status(404).json(
-        new ApiResponse(404, "Doctor not found", null)
-      );
+      return res
+        .status(404)
+        .json(new ApiResponse(404, "Doctor not found", null));
     }
 
-    res.status(200).json(new ApiResponse(200, "Doctor deleted successfully", null));
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Doctor deleted successfully", null));
   } catch (error) {
-    res.status(500).json(
-      new ApiResponse(500, "Failed to delete doctor", null)
-    );
+    res.status(500).json(new ApiResponse(500, "Failed to delete doctor", null));
   }
 };
 
@@ -128,5 +147,5 @@ module.exports = {
   getDoctorById,
   createDoctor,
   updateDoctor,
-  deleteDoctor
+  deleteDoctor,
 };
