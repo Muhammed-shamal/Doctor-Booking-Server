@@ -1,0 +1,7 @@
+WHY UNIQUE INDEX IMPORTANT?
+
+This prevents:
+
+Same doctor
+Same date
+Multiple schedules accidentally created
