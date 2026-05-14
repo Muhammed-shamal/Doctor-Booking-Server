@@ -38,8 +38,9 @@ app.get("/db/health", (req, res) => {
 // Routes
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/doctors", protect, require("./routes/doctor.routes"));
+app.use("/api/schedules", protect, require("./routes/schedule.routes"));
 // app.use("/api/patients", require("./routes/patient.routes"));
-// app.use("/api/appointments", require("./routes/appointment.routes"));
+app.use("/api/appointments", protect, require("./routes/appointment.route"));
 
 // Catch-all for undefined routes (optional)
 app.use((req, res) => {
