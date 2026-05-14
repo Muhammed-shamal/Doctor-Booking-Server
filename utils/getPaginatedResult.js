@@ -17,7 +17,7 @@ const getPaginatedResults = async (model, options = {}) => {
   const skip = (page - 1) * limit;
   const search = options.search || "";
   const searchFields = options.searchFields || [];
-  const select = options.select || '';
+  const select = options.select || "";
   const filters = options.filters || {};
   const populate = options.populate || [];
 
@@ -25,14 +25,24 @@ const getPaginatedResults = async (model, options = {}) => {
   let searchQuery = {};
   if (search && searchFields.length > 0) {
     searchQuery = {
-      $or: searchFields.map(field => ({
-        [field]: { $regex: search, $options: "i" }
-      }))
+      $or: searchFields.map((field) => ({
+        [field]: { $regex: search, $options: "i" },
+      })),
     };
   }
 
   // Combine filters + search using $and
-  const query = { $and: [filters, searchQuery] };
+  // const query = { $and: [filters, searchQuery] };
+  const query = {
+    ...filters,
+    ...(search && searchFields.length > 0
+      ? {
+          $or: searchFields.map((field) => ({
+            [field]: { $regex: search, $options: "i" },
+          })),
+        }
+      : {}),
+  };
 
   const results = await model
     .find(query)
@@ -49,7 +59,7 @@ const getPaginatedResults = async (model, options = {}) => {
     results,
     totalPages,
     currentPage: page,
-    totalCount
+    totalCount,
   };
 };
 
