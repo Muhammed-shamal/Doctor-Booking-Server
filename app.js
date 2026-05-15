@@ -4,10 +4,12 @@ const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
+const swaggerUi = require("swagger-ui-express");
 
 const { corsOptions } = require("./config/common");
 const protect = require("./middlewares/auth.middleware");
 const errorMiddleware = require("./middlewares/error.middleware");
+const swaggerSpec = require("./swagger");
 
 const app = express();
 
@@ -20,6 +22,9 @@ app.use(cors(corsOptions.normal));
 app.use(helmet());
 
 app.use(morgan("dev"));
+
+//swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get("/", (req, res) => {
   res.json({
