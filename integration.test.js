@@ -1,10 +1,6 @@
 const request = require("supertest");
 const app = require("../app");
-const {
-  setupTestDB,
-  closeTestDB,
-  clearTestDB,
-} = require("../testSetup");
+const { setupTestDB, closeTestDB, clearTestDB } = require("../testSetup");
 
 /**
  * Integration Test Suite
@@ -29,6 +25,9 @@ describe("Integration Tests - Complete Workflow", () => {
       const patientRegRes = await request(app).post("/api/auth/register").send({
         name: "John Patient",
         email: "john.patient@example.com",
+
+        phone: "9895114836",
+        address: "Rumas Quorters Palottupalli PO Mattanur",
         password: "PatientPass123!",
       });
 
@@ -49,6 +48,8 @@ describe("Integration Tests - Complete Workflow", () => {
       const adminRegRes = await request(app).post("/api/auth/register").send({
         name: "Admin User",
         email: "admin@example.com",
+        phone: "9446264086",
+        address: "Rumas Quorters Palottupalli PO Mattanur",
         password: "AdminPass123!",
       });
 
@@ -87,7 +88,7 @@ describe("Integration Tests - Complete Workflow", () => {
       expect(doctorsListRes.statusCode).toBe(200);
       expect(doctorsListRes.body.data.length).toBeGreaterThan(0);
       const createdDoctor = doctorsListRes.body.data.find(
-        (d) => d._id === doctorId
+        (d) => d._id === doctorId,
       );
       expect(createdDoctor).toBeDefined();
 
@@ -130,7 +131,7 @@ describe("Integration Tests - Complete Workflow", () => {
       expect(schedulesRes.statusCode).toBe(200);
       expect(schedulesRes.body.data.length).toBeGreaterThan(0);
       const retrievedSchedule = schedulesRes.body.data.find(
-        (s) => s._id === scheduleId
+        (s) => s._id === scheduleId,
       );
       expect(retrievedSchedule).toBeDefined();
 
@@ -266,7 +267,9 @@ describe("Integration Tests - Complete Workflow", () => {
           });
 
         expect(bookRes.statusCode).toBe(201);
-        expect(bookRes.body.data.patient.toString()).toBe(patientRegRes.body.data._id);
+        expect(bookRes.body.data.patient.toString()).toBe(
+          patientRegRes.body.data._id,
+        );
       }
 
       // Verify all patients have their appointments
@@ -278,11 +281,13 @@ describe("Integration Tests - Complete Workflow", () => {
         expect(appointmentsRes.statusCode).toBe(200);
         expect(appointmentsRes.body.data.length).toBe(1);
         expect(appointmentsRes.body.data[0].patient.toString()).toBe(
-          patients[i].id
+          patients[i].id,
         );
       }
 
-      console.log("✅ Multiple patient booking workflow completed successfully");
+      console.log(
+        "✅ Multiple patient booking workflow completed successfully",
+      );
     });
 
     it("should prevent duplicate admin operations by non-admin", async () => {
@@ -290,6 +295,8 @@ describe("Integration Tests - Complete Workflow", () => {
       const patientRegRes = await request(app).post("/api/auth/register").send({
         name: "Patient",
         email: "patient@example.com",
+        phone: "9895114836",
+        address: "Rumas Quorters Palottupalli PO Mattanur",
         password: "Pass123!",
       });
 
@@ -333,13 +340,11 @@ describe("Integration Tests - Complete Workflow", () => {
     });
 
     it("should handle malformed request bodies", async () => {
-      const res = await request(app)
-        .post("/api/auth/register")
-        .send({
-          name: 123, // Should be string
-          email: "test@example.com",
-          password: "Pass123!",
-        });
+      const res = await request(app).post("/api/auth/register").send({
+        name: 123, // Should be string
+        email: "test@example.com",
+        password: "Pass123!",
+      });
 
       expect([400, 422]).toContain(res.statusCode);
     });

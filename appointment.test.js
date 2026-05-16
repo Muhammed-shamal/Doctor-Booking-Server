@@ -29,6 +29,8 @@ describe("Appointment Routes", () => {
     const patientRes = await request(app).post("/api/auth/register").send({
       name: "Patient User",
       email: "patient@example.com",
+      phone: "8304912033",
+      address: "Rumas Quorters Palottupalli PO Mattanur",
       password: "PatientPass123!",
     });
 
@@ -45,6 +47,8 @@ describe("Appointment Routes", () => {
     const adminRes = await request(app).post("/api/auth/register").send({
       name: "Admin User",
       email: "admin@example.com",
+      phone: "9446264086",
+      address: "Rumas Quorters Palottupalli PO Mattanur",
       password: "AdminPass123!",
     });
 
@@ -190,15 +194,15 @@ describe("Appointment Routes", () => {
       const patient2Res = await request(app).post("/api/auth/register").send({
         name: "Patient Two",
         email: "patient2@example.com",
+        phone: "9895114836",
+        address: "Rumas Quorters Palottupalli PO Mattanur",
         password: "Patient2Pass123!",
       });
 
-      const patient2LoginRes = await request(app)
-        .post("/api/auth/login")
-        .send({
-          email: "patient2@example.com",
-          password: "Patient2Pass123!",
-        });
+      const patient2LoginRes = await request(app).post("/api/auth/login").send({
+        email: "patient2@example.com",
+        password: "Patient2Pass123!",
+      });
 
       const res2 = await request(app)
         .post("/api/appointments/book")
@@ -242,6 +246,8 @@ describe("Appointment Routes", () => {
       const newPatientRes = await request(app).post("/api/auth/register").send({
         name: "New Patient",
         email: "newpatient@example.com",
+        phone: "8591879711",
+        address: "Rumas Quorters Palottupalli PO Mattanur",
         password: "NewPass123!",
       });
 

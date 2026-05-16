@@ -1,42 +1,26 @@
-const {
-  body
-} = require("express-validator");
+const { body } = require("express-validator");
 
 const registerValidation = [
-  body("name")
-    .notEmpty()
-    .withMessage(
-      "Name is required"
-    ),
+  body("name").notEmpty().withMessage("Name is required"),
 
-  body("email")
-    .isEmail()
-    .withMessage(
-      "Valid email required"
-    ),
+  body("email").isEmail().withMessage("Valid email required"),
+
+  body("phone").isMobilePhone().withMessage("Valid Phone Number required"),
+
+  body("address").withMessage("Address is required"),
 
   body("password")
     .isLength({ min: 6 })
-    .withMessage(
-      "Password must be at least 6 characters"
-    )
+    .withMessage("Password must be at least 6 characters"),
 ];
 
 const loginValidation = [
-  body("email")
-    .isEmail()
-    .withMessage(
-      "Valid email required"
-    ),
+  body("email").isEmail().withMessage("Valid email required"),
 
-  body("password")
-    .notEmpty()
-    .withMessage(
-      "Password required"
-    )
+  body("password").notEmpty().withMessage("Password required"),
 ];
 
 module.exports = {
   registerValidation,
-  loginValidation
+  loginValidation,
 };

@@ -21,6 +21,8 @@ describe("Auth Routes", () => {
       const res = await request(app).post("/api/auth/register").send({
         name: "John Doe",
         email: "john@example.com",
+        phone: "8304912033",
+        address: "Rumas Quorters Palottupalli PO Mattanur",
         password: "Password123!",
       });
 
@@ -37,6 +39,7 @@ describe("Auth Routes", () => {
       const res = await request(app).post("/api/auth/register").send({
         name: "John Doe",
         email: "invalid-email",
+        phone: "83049133",
         password: "Password123!",
       });
 
@@ -54,6 +57,8 @@ describe("Auth Routes", () => {
       const res = await request(app).post("/api/auth/register").send({
         name: "John Doe",
         email: "john@example.com",
+        phone: "8304912033",
+        address: "Rumas Quorters Palottupalli PO Mattanur",
         password: "Password123!",
       });
 
@@ -137,6 +142,8 @@ describe("Auth Routes", () => {
       const registerRes = await request(app).post("/api/auth/register").send({
         name: "Test User",
         email: "test@example.com",
+        phone: "8304912033",
+        address: "Rumas Quorters Palottupalli PO Mattanur",
         password: "Password123!",
       });
 

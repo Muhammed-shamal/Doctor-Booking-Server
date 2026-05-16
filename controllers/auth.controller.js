@@ -10,7 +10,7 @@ const secure = sameSite === "None";
 
 const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, phone, address, password } = req.body;
 
     const existingUser = await User.findOne({
       email,
@@ -27,6 +27,8 @@ const register = async (req, res) => {
     const user = await User.create({
       name,
       email,
+      phone,
+      address,
       password: hashedPassword,
     });
 
@@ -46,14 +48,14 @@ const register = async (req, res) => {
           _id: user._id,
           name: user.name,
           email: user.email,
+          phone: user.phone,
+          address: user.address,
           role: user.role,
         },
       }),
     );
   } catch (error) {
-    res.status(500).json(
-      new ApiResponse(500, "Failed to register user", null)
-    );
+    res.status(500).json(new ApiResponse(500, "Failed to register user", null));
   }
 };
 
@@ -100,9 +102,7 @@ const login = async (req, res) => {
       }),
     );
   } catch (error) {
-    res.status(500).json(
-      new ApiResponse(500, "Failed to login", null)
-    );
+    res.status(500).json(new ApiResponse(500, "Failed to login", null));
   }
 };
 
@@ -135,7 +135,7 @@ const me = async (req, res) => {
   res.status(200).json(
     new ApiResponse(200, "User details retrieved successfully", {
       user: req.user,
-    })
+    }),
   );
 };
 
@@ -146,9 +146,7 @@ const logout = async (req, res) => {
     sameSite,
   });
 
-  res.status(200).json(
-    new ApiResponse(200, "Logged out successfully", null)
-  );
+  res.status(200).json(new ApiResponse(200, "Logged out successfully", null));
 };
 
 module.exports = {

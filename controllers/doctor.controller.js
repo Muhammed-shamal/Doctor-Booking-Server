@@ -95,7 +95,6 @@ const getDoctorById = async (req, res) => {
 const createDoctor = async (req, res) => {
   try {
     const doctor = await Doctor.create(req.body);
-
     res
       .status(201)
       .json(new ApiResponse(201, "Doctor created successfully", { doctor }));

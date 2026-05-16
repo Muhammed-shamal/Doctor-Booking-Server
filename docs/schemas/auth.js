@@ -4,52 +4,58 @@ module.exports = {
 
     properties: {
       _id: {
-        type: "string"
+        type: "string",
       },
 
       name: {
-        type: "string"
+        type: "string",
       },
 
       email: {
-        type: "string"
+        type: "string",
       },
+
+      phone: { type: "string" },
+      address: { type: "string" },
 
       role: {
         type: "string",
-        enum: ["patient", "admin"]
+        enum: ["patient", "admin"],
       },
 
       createdAt: {
         type: "string",
-        format: "date-time"
+        format: "date-time",
       },
 
       updatedAt: {
         type: "string",
-        format: "date-time"
-      }
-    }
+        format: "date-time",
+      },
+    },
   },
 
   RegisterInput: {
     type: "object",
 
-    required: ["name", "email", "password"],
+    required: ["name", "email", "phone", "address", "password"],
 
     properties: {
       name: {
-        type: "string"
+        type: "string",
       },
 
       email: {
-        type: "string"
+        type: "string",
       },
 
+      phone: { type: "string" },
+      address: { type: "string" },
+
       password: {
-        type: "string"
-      }
-    }
+        type: "string",
+      },
+    },
   },
 
   LoginInput: {
@@ -59,12 +65,12 @@ module.exports = {
 
     properties: {
       email: {
-        type: "string"
+        type: "string",
       },
 
       password: {
-        type: "string"
-      }
-    }
-  }
+        type: "string",
+      },
+    },
+  },
 };
