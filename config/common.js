@@ -26,6 +26,17 @@ const commonOptions = {
       credentials: true,
     },
   },
+
+  //others
+  clientUrl: process.env.CLIENT_URL || "http://localhost:3000",
+  company: {
+    name: process.env.COMPANY_NAME || "Doctor Booking",
+    phone: process.env.COMPANY_PHONE || "+91 8304912033",
+    address: process.env.COMPANY_ADDRESS || "Rumas Quarters Palottupalli Po Mattanur, Kannur District, Kerala- 670702",
+    website: process.env.COMPANY_WEBSITE || "http://localhost:3000",
+    email: process.env.COMPANY_MAIL || "muhammedshamalpv@gmail.com",
+    password: process.env.COMPANY_MAIL_PASSWORD || "",
+  },
 };
 
 module.exports = commonOptions;

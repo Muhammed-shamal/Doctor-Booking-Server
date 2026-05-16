@@ -8,6 +8,7 @@ const {
   logout,
   me,
   refresh,
+  forgotPassword,
 } = require("../controllers/auth.controller");
 
 const protect = require("../middlewares/auth.middleware");
@@ -94,5 +95,7 @@ router.get("/me", protect, me);
  *         description: Logout successful
  */
 router.post("/logout", logout);
+
+router.post("/forgot-password", forgotPassword); 
 
 module.exports = router;

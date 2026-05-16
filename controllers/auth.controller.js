@@ -3,6 +3,9 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const generateTokens = require("../utils/generateTokens");
 const ApiResponse = require("../utils/apiResponse");
+const commonOptions = require("../config/common");
+const sendEmail = require("../services/mail");
+const { generateResetPasswordEmail } = require("../utils/emailTemplate");
 
 const isProd = process.env.NODE_ENV === "production";
 const sameSite = isProd ? "None" : "Lax";
@@ -149,10 +152,69 @@ const logout = async (req, res) => {
   res.status(200).json(new ApiResponse(200, "Logged out successfully", null));
 };
 
+// forgot password
+const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json(new ApiResponse(400, "Email is required"));
+    }
+
+    // check user
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json(new ApiResponse(404, "User not found"));
+    }
+
+    // generate token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+
+    // hash token before saving
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetToken)
+      .digest("hex");
+
+    // save token + expiry
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 mins
+
+    await user.save();
+
+    // frontend reset url
+    const resetUrl = `${commonOptions.clientUrl}/reset-password/${resetToken}`;
+
+    // HTML email
+    const html = generateResetPasswordEmail({
+      name: user.name || "User",
+      resetUrl,
+    });
+
+    await sendEmail({
+      to: user.email,
+      subject: "Reset Your Password",
+      text: `Reset your password: ${resetUrl}`,
+      html,
+    });
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Password reset link sent to email", resetUrl),
+      );
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    return res.status(500).json(new ApiResponse(500, "Server error"));
+  }
+};
+
 module.exports = {
   register,
   login,
   logout,
+  forgotPassword,
   me,
   refresh,
 };

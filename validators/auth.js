@@ -7,7 +7,7 @@ const registerValidation = [
 
   body("phone").isMobilePhone().withMessage("Valid Phone Number required"),
 
-  body("address").withMessage("Address is required"),
+  body("address").notEmpty().withMessage("Address is required"),
 
   body("password")
     .isLength({ min: 6 })
