@@ -51,6 +51,7 @@ const getDoctorSchedules = async (req, res) => {
       limit,
       filters,
       sort: { date: 1 },
+      populate: [{ path: "doctor", select: "fname lname" }],
     });
 
     res
@@ -63,6 +64,7 @@ const getDoctorSchedules = async (req, res) => {
         ),
       );
   } catch (error) {
+    console.log("failed to retrieve", error);
     res
       .status(500)
       .json(new ApiResponse(500, "Failed to retrieve doctor schedules", null));
@@ -71,6 +73,7 @@ const getDoctorSchedules = async (req, res) => {
 
 const getScheduleById = async (req, res) => {
   try {
+    console.log('try to fetch ',req.params.id)
     const schedule = await Schedule.findById(req.params.id);
 
     if (!schedule) {
@@ -134,13 +137,11 @@ const deleteSchedule = async (req, res) => {
 
     await schedule.deleteOne();
 
-    res
-      .status(200)
-      .json(
-        new ApiResponse(200, "Schedule deleted successfully", {
-          id: req.params.id,
-        }),
-      );
+    res.status(200).json(
+      new ApiResponse(200, "Schedule deleted successfully", {
+        id: req.params.id,
+      }),
+    );
   } catch (error) {
     res
       .status(500)

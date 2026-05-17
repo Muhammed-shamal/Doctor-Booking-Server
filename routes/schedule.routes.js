@@ -116,7 +116,7 @@ router.post(
  *       401:
  *         description: Unauthorized
  */
-router.get("/:doctorId", getDoctorSchedules);
+router.get("/doctor/:doctorId", getDoctorSchedules);
 
 router.get("/:id", getScheduleById);
 

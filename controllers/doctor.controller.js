@@ -1,4 +1,5 @@
 const Doctor = require("../models/Doctor");
+const Schedule = require("../models/Schedule");
 const ApiResponse = require("../utils/apiResponse");
 const getPaginatedResults = require("../utils/getPaginatedResult");
 
@@ -93,7 +94,7 @@ const getDoctorById = async (req, res) => {
 
     res
       .status(200)
-      .json(new ApiResponse(200, "Doctor retrieved successfully", { doctor }));
+      .json(new ApiResponse(200, "Doctor retrieved successfully", doctor));
   } catch (error) {
     res
       .status(500)
@@ -134,7 +135,24 @@ const updateDoctor = async (req, res) => {
 
 const deleteDoctor = async (req, res) => {
   try {
-    const doctor = await Doctor.findByIdAndDelete(req.params.id);
+    const doctorId = req.params.id;
+
+    // check schedules exist for this doctor
+    const existingSchedule = await Schedule.findOne({
+      doctor: doctorId,
+    });
+
+    if (existingSchedule) {
+      return res.status(400).json(
+        new ApiResponse(
+          400,
+          "Cannot delete doctor because schedules exist",
+          null
+        )
+      );
+    }
+
+    const doctor = await Doctor.findByIdAndDelete(doctorId);
 
     if (!doctor) {
       return res
@@ -144,11 +162,13 @@ const deleteDoctor = async (req, res) => {
 
     res.status(200).json(
       new ApiResponse(200, "Doctor deleted successfully", {
-        id: req.params.id,
-      }),
+        id: doctorId,
+      })
     );
   } catch (error) {
-    res.status(500).json(new ApiResponse(500, "Failed to delete doctor", null));
+    res
+      .status(500)
+      .json(new ApiResponse(500, "Failed to delete doctor", null));
   }
 };
 
