@@ -1,5 +1,5 @@
 const bcrypt = require("bcryptjs");
-
+const crypto = require("crypto");
 const User = require("../models/User");
 const generateTokens = require("../utils/generateTokens");
 const ApiResponse = require("../utils/apiResponse");
@@ -197,7 +197,7 @@ const forgotPassword = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json(new ApiResponse(404, "User not found"));
+      return res.status(404).json(new ApiResponse(404, "No user found for this email address!"));
     }
 
     // generate token
@@ -242,12 +242,66 @@ const forgotPassword = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    // validate
+    if (!password) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, "Password is required"));
+    }
+
+    // hash incoming token
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
+
+    // find user with valid token + expiry
+    const user = await User.findOne({
+      resetPasswordToken: hashedToken,
+      resetPasswordExpire: {
+        $gt: Date.now(),
+      },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json(new ApiResponse(400, "Invalid or expired reset token"));
+    }
+
+    // update password
+    user.password = password;
+
+    // clear reset fields
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+
+    await user.save();
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Password reset successful"));
+  } catch (error) {
+    console.error("Reset password error:", error);
+
+    return res
+      .status(500)
+      .json(new ApiResponse(500, "Server error"));
+  }
+};
+
 module.exports = {
   register,
   devRegister,
   login,
   logout,
   forgotPassword,
+  resetPassword,
   me,
   refresh,
 };

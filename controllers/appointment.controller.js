@@ -97,17 +97,17 @@ const bookAppointment = async (req, res) => {
       slotId,
     });
 
-    res
-      .status(201)
-      .json(
-        new ApiResponse(201, "Appointment booked successfully", { appointment: appointment[0] }),
-      );
+    res.status(201).json(
+      new ApiResponse(201, "Appointment booked successfully", {
+        appointment: appointment[0],
+      }),
+    );
   } catch (error) {
     await session.abortTransaction();
 
-    res.status(500).json(
-      new ApiResponse(500, "Failed to book appointment", null)
-    );
+    res
+      .status(500)
+      .json(new ApiResponse(500, "Failed to book appointment", null));
   } finally {
     session.endSession();
   }
@@ -115,21 +115,25 @@ const bookAppointment = async (req, res) => {
 
 const getMyAppointments = async (req, res) => {
   try {
-    const appointments = await Appointment.find({
-      patient: req.user._id,
-    })
-      .populate("doctor")
-      .sort({
-        createdAt: -1,
-      });
+    const { page, limit } = req.params;
+    const filter = { patient: req.user._id };
+
+    const appointments = await getPaginatedResults(Appointment, {
+      page,
+      limit,
+      filters,
+      populate: [{ path: "doctor", select: "fname lname" }],
+    });
 
     res.status(200).json(
-      new ApiResponse(200, "Appointments retrieved successfully", { appointments })
+      new ApiResponse(200, "Appointments retrieved successfully", {
+        appointments,
+      }),
     );
   } catch (error) {
-    res.status(500).json(
-      new ApiResponse(500, "Failed to retrieve appointments", null)
-    );
+    res
+      .status(500)
+      .json(new ApiResponse(500, "Failed to retrieve appointments", null));
   }
 };
 
@@ -146,12 +150,14 @@ const updateAppointmentStatus = async (req, res) => {
     );
 
     res.status(200).json(
-      new ApiResponse(200, "Appointment status updated successfully", { appointment })
+      new ApiResponse(200, "Appointment status updated successfully", {
+        appointment,
+      }),
     );
   } catch (error) {
-    res.status(500).json(
-      new ApiResponse(500, "Failed to update appointment status", null)
-    );
+    res
+      .status(500)
+      .json(new ApiResponse(500, "Failed to update appointment status", null));
   }
 };
 
