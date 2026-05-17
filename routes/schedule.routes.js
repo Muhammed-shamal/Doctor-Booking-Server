@@ -83,7 +83,6 @@ router.post(
   createSchedule,
 );
 
-
 /**
  * @swagger
  * /api/schedules/{doctorId}:
@@ -120,8 +119,14 @@ router.get("/doctor/:doctorId", getDoctorSchedules);
 
 router.get("/:id", getScheduleById);
 
-router.put("/:id", updateSchedule);
+router.put(
+  "/:id",
+  scheduleValidation,
+  validate,
+  authorizeRoles("admin"),
+  updateSchedule,
+);
 
-router.delete("/:id", deleteSchedule);
+router.delete("/:id", authorizeRoles("admin"), deleteSchedule);
 
 module.exports = router;

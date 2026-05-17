@@ -4,6 +4,7 @@ const Appointment = require("../models/Appointment");
 
 const Schedule = require("../models/Schedule");
 const ApiResponse = require("../utils/apiResponse");
+const getPaginatedResults = require("../utils/getPaginatedResult");
 
 const bookAppointment = async (req, res) => {
   const session = await mongoose.startSession();
@@ -116,7 +117,7 @@ const bookAppointment = async (req, res) => {
 const getMyAppointments = async (req, res) => {
   try {
     const { page, limit } = req.params;
-    const filter = { patient: req.user._id };
+    const filters = { patient: req.user._id };
 
     const appointments = await getPaginatedResults(Appointment, {
       page,
@@ -125,12 +126,17 @@ const getMyAppointments = async (req, res) => {
       populate: [{ path: "doctor", select: "fname lname" }],
     });
 
-    res.status(200).json(
-      new ApiResponse(200, "Appointments retrieved successfully", {
-        appointments,
-      }),
-    );
+    res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          "Appointments retrieved successfully",
+          appointments,
+        ),
+      );
   } catch (error) {
+    console.log("error fetch", error);
     res
       .status(500)
       .json(new ApiResponse(500, "Failed to retrieve appointments", null));
@@ -161,8 +167,28 @@ const updateAppointmentStatus = async (req, res) => {
   }
 };
 
+const getAppointmentById = async (req, res) => {
+  try {
+    console.log('try to fetch ',req.params.id)
+    const appointment = await Appointment.findById(req.params.id);
+
+    if (!appointment) {
+      return res.status(404).json(new ApiResponse("Appointment not found", 404));
+    }
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Appointment retrieved successfully", appointment));
+  } catch (error) {
+    res
+      .status(500)
+      .json(new ApiResponse(500, "Failed to retrieve doctor appointment", null));
+  }
+};
+
 module.exports = {
   bookAppointment, //for patients
   getMyAppointments, //for patients
+  getAppointmentById,
   updateAppointmentStatus, //for admin
 };

@@ -86,7 +86,7 @@ const getScheduleById = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json(new ApiResponse(500, "Failed to retrieve doctor schedules", null));
+      .json(new ApiResponse(500, "Failed to retrieve doctor schedule", null));
   }
 };
 

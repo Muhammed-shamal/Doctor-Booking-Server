@@ -214,7 +214,10 @@ const forgotPassword = async (req, res) => {
 
     // save token + expiry
     user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 mins
+    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 mins
+
+    console.log("RAW TOKEN:", resetToken);
+    console.log("HASHED TOKEN:", hashedToken);
 
     await user.save();
 
@@ -236,7 +239,12 @@ const forgotPassword = async (req, res) => {
 
     return res
       .status(200)
-      .json(new ApiResponse(200, `Password reset link sent to email: ${user.email}`));
+      .json(
+        new ApiResponse(
+          200,
+          `Password reset link sent to email: ${user.email}`,
+        ),
+      );
   } catch (error) {
     console.error("Forgot password error:", error);
     return res.status(500).json(new ApiResponse(500, "Server error"));
@@ -254,9 +262,11 @@ const resetPassword = async (req, res) => {
     }
 
     // hash incoming token
+    console.log("TOKEN FROM URL:", token);    
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    console.log("HASHED FROM URL:", hashedToken);
     // find user with valid token + expiry
     const user = await User.findOne({
       resetPasswordToken: hashedToken,

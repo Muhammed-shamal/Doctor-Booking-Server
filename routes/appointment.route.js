@@ -6,6 +6,7 @@ const {
   bookAppointment,
   getMyAppointments,
   updateAppointmentStatus,
+  getAppointmentById,
 } = require("../controllers/appointment.controller");
 
 const authorizeRoles = require("../middlewares/role.middleware");
@@ -103,6 +104,8 @@ router.post(
  */
 
 router.get("/my", authorizeRoles("patient"), getMyAppointments);
+
+router.get("/:id", getAppointmentById);
 
 /**
  * @swagger
