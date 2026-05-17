@@ -101,17 +101,13 @@ const login = async (req, res) => {
     });
 
     if (!user) {
-      return res.status(400).json({
-        message: "Invalid credentials",
-      });
+      return res.status(400).json(new ApiResponse(400, "Invalid credentials"));
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(400).json({
-        message: "Invalid credentials",
-      });
+      return res.status(400).json(new ApiResponse(400, "Invalid credentials"));
     }
 
     const { accessToken, refreshToken } = generateTokens(user);
@@ -144,14 +140,15 @@ const login = async (req, res) => {
 const refresh = async (req, res) => {
   console.log("try to refresh", req.cookies.refresh);
   const token = req.cookies.refreshToken;
-  if (!token) return res.status(401).json({ message: "No refresh token" });
+  if (!token) return res.status(401).json(new ApiResponse(400, "No refresh token"));
 
   try {
     const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
 
     console.log("decoded after refresh the token", decoded);
     const user = await User.findById(decoded.id);
-    if (!user) return res.status(401).json({ message: "User not found" });
+    if (!user)
+      return res.status(401).json(new ApiResponse(401, "User not found"));
 
     const { accessToken, refreshToken } = generateTokens(user);
 
@@ -162,7 +159,7 @@ const refresh = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res.json({ accessToken });
+    res.json(new ApiResponse(200, "New access token", accessToken));
   } catch {
     res.status(401).json(new ApiResponse(401, "Invalid refresh token", null));
   }
