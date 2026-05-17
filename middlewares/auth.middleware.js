@@ -5,24 +5,23 @@ const protect = async (req, res, next) => {
   try {
     const token = req.cookies.token;
 
+    console.log("token in access", token);
+
     if (!token) {
       return res.status(401).json({
-        message: "Unauthorized"
+        message: "Unauthorized",
       });
     }
 
-    const decoded = jwt.verify(
-      token,
-      process.env.ACCESS_TOKEN_SECRET
-    );
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-    const user = await User.findById(decoded.id).select(
-      "-password"
-    );
+    const user = await User.findById(decoded.id).select("-password");
+
+    console.log("user in middelware auth", user);
 
     if (!user) {
       return res.status(401).json({
-        message: "User not found"
+        message: "User not found",
       });
     }
 
@@ -31,7 +30,7 @@ const protect = async (req, res, next) => {
     next();
   } catch (error) {
     return res.status(401).json({
-      message: "Invalid token"
+      message: "Invalid token",
     });
   }
 };

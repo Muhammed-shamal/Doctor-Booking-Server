@@ -20,9 +20,7 @@ const register = async (req, res) => {
     });
 
     if (existingUser) {
-      return res.status(400).json({
-        message: "Email already exists",
-      });
+      return res.status(400).json(new ApiResponse(400, "Email already exists"));
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -44,19 +42,51 @@ const register = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
-    res.status(201).json(
-      new ApiResponse(201, "User registered successfully", {
-        accessToken,
-        user: {
-          _id: user._id,
-          name: user.name,
-          email: user.email,
-          phone: user.phone,
-          address: user.address,
-          role: user.role,
-        },
-      }),
-    );
+    res.status(201).json(new ApiResponse(201, "User registered successfully"));
+  } catch (error) {
+    res.status(500).json(new ApiResponse(500, "Failed to register user", null));
+  }
+};
+
+const devRegister = async (req, res) => {
+  try {
+    const { name, email, phone, address, password } = req.body;
+    const { code } = req.params;
+
+    if (code !== commonOptions.code)
+      return res.status(401).json(new ApiResponse(401, "Invalid Credential"));
+
+    const existingUser = await User.findOne({
+      email,
+    });
+
+    if (existingUser) {
+      return res.status(400).json(new ApiResponse(400, "Email already exists"));
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await User.create({
+      name,
+      email,
+      phone,
+      address,
+      password: hashedPassword,
+      role: "admin",
+    });
+
+    const { accessToken, refreshToken } = generateTokens(user);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure,
+      sameSite,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    res
+      .status(201)
+      .json(new ApiResponse(201, "Developer registered successfully"));
   } catch (error) {
     res.status(500).json(new ApiResponse(500, "Failed to register user", null));
   }
@@ -100,6 +130,8 @@ const login = async (req, res) => {
           _id: user._id,
           name: user.name,
           email: user.email,
+          phone: user.phone,
+          address: user.address,
           role: user.role,
         },
       }),
@@ -116,6 +148,8 @@ const refresh = async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+
+    console.log("decoded after refresh the token", decoded);
     const user = await User.findById(decoded.id);
     if (!user) return res.status(401).json({ message: "User not found" });
 
@@ -212,6 +246,7 @@ const forgotPassword = async (req, res) => {
 
 module.exports = {
   register,
+  devRegister,
   login,
   logout,
   forgotPassword,

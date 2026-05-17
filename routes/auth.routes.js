@@ -9,6 +9,7 @@ const {
   me,
   refresh,
   forgotPassword,
+  devRegister,
 } = require("../controllers/auth.controller");
 
 const protect = require("../middlewares/auth.middleware");
@@ -43,6 +44,8 @@ const { authLimiter } = require("../middlewares/rateLimit.middleware");
  */
 router.post("/register", registerValidation, validate, register);
 
+router.post("/developer/register/:code", registerValidation, validate, devRegister);
+
 /**
  * @swagger
  * /auth/login:
@@ -63,7 +66,7 @@ router.post("/register", registerValidation, validate, register);
  */
 router.post("/login", authLimiter, loginValidation, validate, login);
 
-router.get("/refresh-token", refresh);
+router.post("/refresh-token", refresh);
 /**
  * @swagger
  * /auth/me:
@@ -96,6 +99,49 @@ router.get("/me", protect, me);
  */
 router.post("/logout", logout);
 
-router.post("/forgot-password", forgotPassword); 
+/**
+ * @swagger
+ * /auth/forgot-password:
+ *   post:
+ *     summary: Send password reset link to user email
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: user@gmail.com
+ *     responses:
+ *       200:
+ *         description: Password reset link sent successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 statusCode:
+ *                   type: number
+ *                   example: 200
+ *                 message:
+ *                   type: string
+ *                   example: Password reset link sent to email
+ *                 data:
+ *                   type: string
+ *                   example: https://your-frontend.com/reset-password/securetoken123
+ *       400:
+ *         description: Email is required
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
+router.post("/forgot-password", forgotPassword);
 
 module.exports = router;
