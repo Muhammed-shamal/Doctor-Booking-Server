@@ -2,42 +2,60 @@ const mongoose = require("mongoose");
 
 const doctorSchema = new mongoose.Schema(
   {
-    name: {
+    fname: {
       type: String,
-      required: true
+      required: true,
+    },
+
+    lname: {
+      type: String,
+    },
+
+    email: {
+      type: String,
+    },
+
+    phone: {
+      type: String,
+      required: true,
     },
 
     specialization: {
       type: String,
-      required: true
+      required: true,
     },
 
     experience: {
       type: Number,
-      required: true
+      required: true,
     },
 
     consultationFee: {
       type: Number,
-      required: true
+      required: true,
     },
 
-    about: {
-      type: String
+    bio: {
+      type: String,
     },
 
-    profileImage: {
-      type: String
-    },
+    qualifications: { type: String, required: true },
+
+    clinic_name: { type: String, required: true },
+    clinic_address: { type: String, required: true },
+
+    // profileImage: {
+    //   type: String,
+    // },
 
     isActive: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   {
-    timestamps: true
-  }
+    timestamps: true,
+  },
 );
 
 module.exports = mongoose.model("Doctor", doctorSchema);

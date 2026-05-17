@@ -138,7 +138,7 @@ const login = async (req, res) => {
 };
 
 const refresh = async (req, res) => {
-  console.log("try to refresh", req.cookies.refresh);
+  console.log("try to refresh", req.cookies.refreshToken);
   const token = req.cookies.refreshToken;
   if (!token) return res.status(401).json(new ApiResponse(400, "No refresh token"));
 
@@ -158,7 +158,7 @@ const refresh = async (req, res) => {
       sameSite,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
-
+    console.log('access otken',accessToken);
     res.json(new ApiResponse(200, "New access token", accessToken));
   } catch {
     res.status(401).json(new ApiResponse(401, "Invalid refresh token", null));
@@ -166,6 +166,7 @@ const refresh = async (req, res) => {
 };
 
 const me = async (req, res) => {
+  console.log('req user',req.user);
   res.status(200).json(
     new ApiResponse(200, "User details retrieved successfully", {
       user: req.user,
