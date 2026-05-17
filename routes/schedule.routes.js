@@ -5,6 +5,7 @@ const router = express.Router();
 const {
   createSchedule,
   getDoctorSchedules,
+  getScheduleById,
 } = require("../controllers/schedule.controller");
 
 const authorizeRoles = require("../middlewares/role.middleware");
@@ -114,5 +115,7 @@ router.post(
  *         description: Unauthorized
  */
 router.get("/:doctorId", getDoctorSchedules);
+
+router.get("/:id", getScheduleById);
 
 module.exports = router;

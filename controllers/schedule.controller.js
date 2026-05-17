@@ -69,7 +69,26 @@ const getDoctorSchedules = async (req, res) => {
   }
 };
 
+const getScheduleById = async (req, res) => {
+  try {
+    const schedule = await Schedule.findById(req.params.id);
+
+    if (!schedule) {
+      return res.status(404).json(new ApiResponse("Schedule not found", 404));
+    }
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Schedule retrieved successfully", schedule));
+  } catch (error) {
+    res
+      .status(500)
+      .json(new ApiResponse(500, "Failed to retrieve doctor schedules", null));
+  }
+};
+
 module.exports = {
   createSchedule,
   getDoctorSchedules,
+  getScheduleById
 };
