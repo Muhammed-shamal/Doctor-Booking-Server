@@ -36,7 +36,7 @@ const commonOptions = {
       "Rumas Quarters Palottupalli Po Mattanur, Kannur District, Kerala- 670702",
     website: process.env.COMPANY_WEBSITE || "http://localhost:3000",
     email: process.env.COMPANY_MAIL || "muhammedshamalpv@gmail.com",
-    password: process.env.COMPANY_MAIL_PASSWORD || "maoa hctq kjec zeij",
+    password: process.env.COMPANY_MAIL_PASSWORD || "lutr kmnh gpwz bzgt",
   },
 
   code: process.env.CODE || "QwertyuioP",

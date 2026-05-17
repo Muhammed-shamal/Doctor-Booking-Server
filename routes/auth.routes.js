@@ -10,6 +10,7 @@ const {
   refresh,
   forgotPassword,
   devRegister,
+  resetPassword,
 } = require("../controllers/auth.controller");
 
 const protect = require("../middlewares/auth.middleware");
@@ -143,5 +144,7 @@ router.post("/logout", logout);
  *         description: Server error
  */
 router.post("/forgot-password", forgotPassword);
+
+router.post("/reset-password/:token", resetPassword);
 
 module.exports = router;

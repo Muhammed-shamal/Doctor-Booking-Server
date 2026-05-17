@@ -140,7 +140,8 @@ const login = async (req, res) => {
 const refresh = async (req, res) => {
   console.log("try to refresh", req.cookies.refreshToken);
   const token = req.cookies.refreshToken;
-  if (!token) return res.status(401).json(new ApiResponse(400, "No refresh token"));
+  if (!token)
+    return res.status(401).json(new ApiResponse(400, "No refresh token"));
 
   try {
     const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
@@ -158,7 +159,7 @@ const refresh = async (req, res) => {
       sameSite,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
-    console.log('access otken',accessToken);
+    console.log("access otken", accessToken);
     res.json(new ApiResponse(200, "New access token", accessToken));
   } catch {
     res.status(401).json(new ApiResponse(401, "Invalid refresh token", null));
@@ -166,7 +167,7 @@ const refresh = async (req, res) => {
 };
 
 const me = async (req, res) => {
-  console.log('req user',req.user);
+  console.log("req user", req.user);
   res.status(200).json(
     new ApiResponse(200, "User details retrieved successfully", {
       user: req.user,
@@ -197,7 +198,9 @@ const forgotPassword = async (req, res) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(404).json(new ApiResponse(404, "No user found for this email address!"));
+      return res
+        .status(404)
+        .json(new ApiResponse(404, "No user found for this email address!"));
     }
 
     // generate token
@@ -211,7 +214,7 @@ const forgotPassword = async (req, res) => {
 
     // save token + expiry
     user.resetPasswordToken = hashedToken;
-    user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 mins
+    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 mins
 
     await user.save();
 
@@ -233,9 +236,7 @@ const forgotPassword = async (req, res) => {
 
     return res
       .status(200)
-      .json(
-        new ApiResponse(200, "Password reset link sent to email", resetUrl),
-      );
+      .json(new ApiResponse(200, `Password reset link sent to email: ${user.email}`));
   } catch (error) {
     console.error("Forgot password error:", error);
     return res.status(500).json(new ApiResponse(500, "Server error"));
@@ -249,16 +250,12 @@ const resetPassword = async (req, res) => {
 
     // validate
     if (!password) {
-      return res
-        .status(400)
-        .json(new ApiResponse(400, "Password is required"));
+      return res.status(400).json(new ApiResponse(400, "Password is required"));
     }
 
     // hash incoming token
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(token)
-      .digest("hex");
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // find user with valid token + expiry
     const user = await User.findOne({
@@ -275,7 +272,7 @@ const resetPassword = async (req, res) => {
     }
 
     // update password
-    user.password = password;
+    user.password = hashedPassword;
 
     // clear reset fields
     user.resetPasswordToken = undefined;
@@ -289,9 +286,7 @@ const resetPassword = async (req, res) => {
   } catch (error) {
     console.error("Reset password error:", error);
 
-    return res
-      .status(500)
-      .json(new ApiResponse(500, "Server error"));
+    return res.status(500).json(new ApiResponse(500, "Server error"));
   }
 };
 
