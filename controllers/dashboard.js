@@ -63,7 +63,7 @@ const getPatientDashboard = async (req, res) => {
   const recentAppointments = await Appointment.find({
     patient: patientId,
   })
-    .populate("doctor", "name specialization profileImage")
+    .populate("doctor", "fname lname specialization profileImage")
     .sort({
       createdAt: -1,
     })
@@ -84,7 +84,7 @@ const getPatientDashboard = async (req, res) => {
       $ne: "cancelled",
     },
   })
-    .populate("doctor", "name specialization profileImage")
+    .populate("doctor", "fname lname specialization profileImage")
     .sort({
       appointmentDate: 1,
     });
