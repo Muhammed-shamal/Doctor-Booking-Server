@@ -142,9 +142,11 @@ const deleteDoctor = async (req, res) => {
         .json(new ApiResponse(404, "Doctor not found", null));
     }
 
-    res
-      .status(200)
-      .json(new ApiResponse(200, "Doctor deleted successfully", null));
+    res.status(200).json(
+      new ApiResponse(200, "Doctor deleted successfully", {
+        id: req.params.id,
+      }),
+    );
   } catch (error) {
     res.status(500).json(new ApiResponse(500, "Failed to delete doctor", null));
   }

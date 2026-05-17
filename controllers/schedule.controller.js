@@ -87,8 +87,71 @@ const getScheduleById = async (req, res) => {
   }
 };
 
+const updateSchedule = async (req, res) => {
+  try {
+    const { date, startTime, endTime, slotDuration } = req.body;
+
+    const schedule = await Schedule.findById(req.params.id);
+
+    if (!schedule) {
+      return res
+        .status(404)
+        .json(new ApiResponse(404, "Schedule not found", null));
+    }
+
+    // regenerate slots if timing changed
+    let slots = schedule.slots;
+
+    if (startTime && endTime && slotDuration) {
+      slots = generateSlots(startTime, endTime, slotDuration);
+    }
+
+    schedule.date = date || schedule.date;
+    schedule.slotDuration = slotDuration || schedule.slotDuration;
+    schedule.slots = slots;
+
+    await schedule.save();
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, "Schedule updated successfully", schedule));
+  } catch (error) {
+    res
+      .status(500)
+      .json(new ApiResponse(500, "Failed to update schedule", null));
+  }
+};
+
+const deleteSchedule = async (req, res) => {
+  try {
+    const schedule = await Schedule.findById(req.params.id);
+
+    if (!schedule) {
+      return res
+        .status(404)
+        .json(new ApiResponse(404, "Schedule not found", null));
+    }
+
+    await schedule.deleteOne();
+
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Schedule deleted successfully", {
+          id: req.params.id,
+        }),
+      );
+  } catch (error) {
+    res
+      .status(500)
+      .json(new ApiResponse(500, "Failed to delete schedule", null));
+  }
+};
+
 module.exports = {
   createSchedule,
+  updateSchedule,
   getDoctorSchedules,
-  getScheduleById
+  getScheduleById,
+  deleteSchedule,
 };

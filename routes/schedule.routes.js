@@ -6,6 +6,8 @@ const {
   createSchedule,
   getDoctorSchedules,
   getScheduleById,
+  updateSchedule,
+  deleteSchedule,
 } = require("../controllers/schedule.controller");
 
 const authorizeRoles = require("../middlewares/role.middleware");
@@ -117,5 +119,9 @@ router.post(
 router.get("/:doctorId", getDoctorSchedules);
 
 router.get("/:id", getScheduleById);
+
+router.put("/:id", updateSchedule);
+
+router.delete("/:id", deleteSchedule);
 
 module.exports = router;
