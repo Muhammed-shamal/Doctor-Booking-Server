@@ -47,6 +47,7 @@ app.use("/api/doctors", protect, require("./routes/doctor.routes"));
 app.use("/api/schedules", protect, require("./routes/schedule.routes"));
 // app.use("/api/patients", require("./routes/patient.routes"));
 app.use("/api/appointments", protect, require("./routes/appointment.route"));
+app.use("/api/dashboard", protect, require("./routes/dashboard"));
 
 // Catch-all for undefined routes (optional)
 app.use((req, res) => {
