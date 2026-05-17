@@ -20,6 +20,7 @@ const getPaginatedResults = async (model, options = {}) => {
   const select = options.select || "";
   const filters = options.filters || {};
   const populate = options.populate || [];
+  const sort = options.sort || {};
 
   // Build search query dynamically
   let searchQuery = {};
@@ -47,7 +48,7 @@ const getPaginatedResults = async (model, options = {}) => {
   const results = await model
     .find(query)
     .select(select)
-    .sort({ createdAt: -1 })
+    .sort({ ...sort, createdAt: -1 })
     .skip(skip)
     .limit(limit)
     .populate(populate);

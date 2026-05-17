@@ -12,11 +12,22 @@ const getDoctors = async (req, res) => {
       minFee,
       maxFee,
       minExperience,
+      status,
     } = req.query;
 
-    const filters = {
-      isActive: true,
-    };
+    const filters = {};
+
+    switch (status) {
+      case "active":
+        filters.isActive = true;
+        break;
+      case "inactive":
+        filters.isActive = false;
+        break;
+      case "all":
+      default:
+        break;
+    }
 
     /*
         specialization
@@ -56,15 +67,13 @@ const getDoctors = async (req, res) => {
       page,
       limit,
       search,
-      searchFields: ["name", "specialization"],
+      searchFields: ["name", "phone", "specialization"],
       filters,
     });
 
     res
       .status(200)
-      .json(
-        new ApiResponse(200, "Doctors retrieved successfully", { doctors }),
-      );
+      .json(new ApiResponse(200, "Doctors retrieved successfully", doctors));
   } catch (error) {
     res
       .status(500)
