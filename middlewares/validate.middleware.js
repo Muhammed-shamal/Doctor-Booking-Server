@@ -7,7 +7,7 @@ const validate = (req, res, next) => {
     validationResult(req);
 
   if (!errors.isEmpty()) {
-    console.log('validation error',errors)
+    
     return res.status(400).json({
       success: false,
       message:

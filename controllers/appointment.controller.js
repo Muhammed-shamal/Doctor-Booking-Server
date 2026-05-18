@@ -181,8 +181,6 @@ const getAppointments = async (req, res) => {
         ),
       );
   } catch (error) {
-    console.log("Appointment fetch error:", error);
-
     return res
       .status(500)
       .json(new ApiResponse(500, "Failed to retrieve appointments", null));
@@ -281,8 +279,6 @@ const updateAppointmentStatus = async (req, res) => {
         ),
       );
   } catch (error) {
-    console.log("Update appointment error:", error);
-
     return res
       .status(error.statusCode || 500)
       .json(
@@ -361,8 +357,6 @@ const cancelAppointmentByPatient = async (req, res) => {
         new ApiResponse(200, "Appointment cancelled successfully", appointment),
       );
   } catch (error) {
-    console.log("Cancel appointment error:", error);
-
     return res
       .status(error.statusCode || 500)
       .json(
@@ -377,7 +371,7 @@ const cancelAppointmentByPatient = async (req, res) => {
 
 const getAppointmentById = async (req, res) => {
   try {
-    console.log("try to fetch ", req.params.id);
+    
     const appointment = await Appointment.findById(req.params.id);
 
     if (!appointment) {

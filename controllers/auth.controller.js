@@ -216,9 +216,6 @@ const forgotPassword = async (req, res) => {
     user.resetPasswordToken = hashedToken;
     user.resetPasswordExpire = Date.now() + 15 * 60 * 1000; // 15 mins
 
-    console.log("RAW TOKEN:", resetToken);
-    console.log("HASHED TOKEN:", hashedToken);
-
     await user.save();
 
     // frontend reset url
@@ -262,11 +259,10 @@ const resetPassword = async (req, res) => {
     }
 
     // hash incoming token
-    console.log("TOKEN FROM URL:", token);    
+    
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    console.log("HASHED FROM URL:", hashedToken);
     // find user with valid token + expiry
     const user = await User.findOne({
       resetPasswordToken: hashedToken,

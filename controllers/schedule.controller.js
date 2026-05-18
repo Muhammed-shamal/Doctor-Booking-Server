@@ -64,7 +64,7 @@ const getDoctorSchedules = async (req, res) => {
         ),
       );
   } catch (error) {
-    console.log("failed to retrieve", error);
+    
     res
       .status(500)
       .json(new ApiResponse(500, "Failed to retrieve doctor schedules", null));
@@ -73,7 +73,7 @@ const getDoctorSchedules = async (req, res) => {
 
 const getScheduleById = async (req, res) => {
   try {
-    console.log('try to fetch ',req.params.id)
+    
     const schedule = await Schedule.findById(req.params.id);
 
     if (!schedule) {

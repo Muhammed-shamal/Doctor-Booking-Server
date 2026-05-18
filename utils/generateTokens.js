@@ -15,7 +15,7 @@ const generateTokens = (user) => {
     expiresIn: '7d',
   });
 
-  console.log("token genearted acces",accessToken)
+  
   return { accessToken, refreshToken };
 };
 

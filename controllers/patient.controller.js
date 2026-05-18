@@ -4,9 +4,7 @@ const getPaginatedResults = require("../utils/getPaginatedResult");
 
 const getPatients = async (req, res) => {
   try {
-    const { page, limit, search } = req.query;
-
-    console.log("req quer", req.query);
+    const { page, limit, search } = req.query;    
 
     const filters = { role: "patient" };
 
@@ -18,12 +16,11 @@ const getPatients = async (req, res) => {
       filters,
     });
 
-    console.log('patients are',patients)
     res
       .status(200)
       .json(new ApiResponse(200, "Patients retrieved successfully", patients));
   } catch (error) {
-    console.log('error patients',error)
+    
     res
       .status(500)
       .json(new ApiResponse(500, "Failed to retrieve patients", null));
