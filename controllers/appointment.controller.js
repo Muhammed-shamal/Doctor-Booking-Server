@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const Appointment = require("../models/Appointment");
 
 const Schedule = require("../models/Schedule");
-const ApiResponse = require("../utils/apiResponse");
+const ApiResponse = require("../utils/ApiResponse");
 const getPaginatedResults = require("../utils/getPaginatedResult");
 const { VALID_STATUS_TRANSITIONS } = require("../config/common");
 

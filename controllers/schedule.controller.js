@@ -1,5 +1,5 @@
 const Schedule = require("../models/Schedule");
-const ApiResponse = require("../utils/apiResponse");
+const ApiResponse = require("../utils/ApiResponse");
 const generateSlots = require("../utils/generateSlots");
 const getPaginatedResults = require("../utils/getPaginatedResult");
 

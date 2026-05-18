@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const ApiResponse = require("../utils/apiResponse");
+const ApiResponse = require("../utils/ApiResponse");
 const getPaginatedResults = require("../utils/getPaginatedResult");
 
 const getPatients = async (req, res) => {
