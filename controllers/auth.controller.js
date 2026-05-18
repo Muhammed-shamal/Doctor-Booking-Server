@@ -41,6 +41,7 @@ const register = async (req, res) => {
       httpOnly: true,
       secure,
       sameSite,
+      path:'/',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -87,6 +88,8 @@ const devRegister = async (req, res) => {
       secure: isProd,
 
       sameSite: isProd ? "None" : "Lax",
+      
+      path:'/',
 
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -154,7 +157,7 @@ const login = async (req, res) => {
 const refresh = async (req, res) => {
   console.log("try to refresh", req.cookies.refreshToken);
   const token = req.cookies.refreshToken;
-  if (!token) {    
+  if (!token) {
     return res.status(401).json(new ApiResponse(400, "No refresh token"));
   }
 
@@ -178,6 +181,7 @@ const refresh = async (req, res) => {
       secure: isProd,
 
       sameSite: isProd ? "None" : "Lax",
+      path:'/',
 
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -200,7 +204,6 @@ const me = async (req, res) => {
 
 const logout = async (req, res) => {
   try {
-    
     const isProd = process.env.NODE_ENV === "production";
 
     res.clearCookie("refreshToken", {
@@ -210,12 +213,16 @@ const logout = async (req, res) => {
 
       sameSite: isProd ? "None" : "Lax",
 
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
     });
-    res.status(200).json(new ApiResponse(200, "Logged out successfully", null));
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Logged out successfully", null));
   } catch (error) {
-    console.log('error is',error);
-    res.status(500).json(new ApiResponse(500, "Failed to logout"));
+    console.log("logout error", error);
+
+    return res.status(500).json(new ApiResponse(500, "Failed to logout"));
   }
 };
 
