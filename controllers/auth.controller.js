@@ -1,5 +1,7 @@
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
+
 const User = require("../models/User");
 const generateTokens = require("../utils/generateTokens");
 const ApiResponse = require("../utils/apiResponse");
@@ -7,9 +9,9 @@ const commonOptions = require("../config/common");
 const sendEmail = require("../services/mail");
 const { generateResetPasswordEmail } = require("../utils/emailTemplate");
 
-const isProd = process.env.NODE_ENV === "production";
-const sameSite = isProd ? "None" : "Lax";
-const secure = sameSite === "None";
+// const isProd = process.env.NODE_ENV === "production";
+// const sameSite = isProd ? "None" : "Lax";
+// const secure = sameSite === "None";
 
 const register = async (req, res) => {
   try {
@@ -77,11 +79,16 @@ const devRegister = async (req, res) => {
 
     const { accessToken, refreshToken } = generateTokens(user);
 
+    const isProd = process.env.NODE_ENV === "production";
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure,
-      sameSite,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+
+      secure: isProd,
+
+      sameSite: isProd ? "None" : "Lax",
+
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res
@@ -112,13 +119,20 @@ const login = async (req, res) => {
 
     const { accessToken, refreshToken } = generateTokens(user);
 
+    console.log("try to save token", refreshToken);
+    const isProd = process.env.NODE_ENV === "production";
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure,
-      sameSite,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+
+      secure: isProd,
+
+      sameSite: isProd ? "None" : "Lax",
+
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
+    console.log("saved suces", refreshToken);
     res.status(200).json(
       new ApiResponse(200, "Login Successful", {
         accessToken,
@@ -140,28 +154,37 @@ const login = async (req, res) => {
 const refresh = async (req, res) => {
   console.log("try to refresh", req.cookies.refreshToken);
   const token = req.cookies.refreshToken;
-  if (!token)
+  if (!token) {    
     return res.status(401).json(new ApiResponse(400, "No refresh token"));
+  }
 
   try {
+    console.log("try to decode");
     const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
 
     console.log("decoded after refresh the token", decoded);
     const user = await User.findById(decoded.id);
+    console.log("idd user", user);
     if (!user)
       return res.status(401).json(new ApiResponse(401, "User not found"));
 
     const { accessToken, refreshToken } = generateTokens(user);
 
+    const isProd = process.env.NODE_ENV === "production";
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure,
-      sameSite,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+
+      secure: isProd,
+
+      sameSite: isProd ? "None" : "Lax",
+
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     console.log("access otken", accessToken);
-    res.json(new ApiResponse(200, "New access token", accessToken));
-  } catch {
+    res.json(new ApiResponse(200, "New access token", { accessToken }));
+  } catch (error) {
+    console.log("failed to refresh", error);
     res.status(401).json(new ApiResponse(401, "Invalid refresh token", null));
   }
 };
@@ -176,13 +199,24 @@ const me = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  res.clearCookie("refreshToken", {
-    httpOnly: true,
-    secure,
-    sameSite,
-  });
+  try {
+    
+    const isProd = process.env.NODE_ENV === "production";
 
-  res.status(200).json(new ApiResponse(200, "Logged out successfully", null));
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+
+      secure: isProd,
+
+      sameSite: isProd ? "None" : "Lax",
+
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    res.status(200).json(new ApiResponse(200, "Logged out successfully", null));
+  } catch (error) {
+    console.log('error is',error);
+    res.status(500).json(new ApiResponse(500, "Failed to logout"));
+  }
 };
 
 // forgot password
@@ -259,7 +293,7 @@ const resetPassword = async (req, res) => {
     }
 
     // hash incoming token
-    
+
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
     const hashedPassword = await bcrypt.hash(password, 10);
 
