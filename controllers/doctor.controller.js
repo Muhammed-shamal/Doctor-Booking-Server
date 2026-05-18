@@ -68,7 +68,7 @@ const getDoctors = async (req, res) => {
       page,
       limit,
       search,
-      searchFields: ["name", "phone", "specialization"],
+      searchFields: ["fname", "lname", "phone", "specialization"],
       filters,
     });
 
@@ -143,13 +143,15 @@ const deleteDoctor = async (req, res) => {
     });
 
     if (existingSchedule) {
-      return res.status(400).json(
-        new ApiResponse(
-          400,
-          "Cannot delete doctor because schedules exist",
-          null
-        )
-      );
+      return res
+        .status(400)
+        .json(
+          new ApiResponse(
+            400,
+            "Cannot delete doctor because schedules exist",
+            null,
+          ),
+        );
     }
 
     const doctor = await Doctor.findByIdAndDelete(doctorId);
@@ -163,12 +165,10 @@ const deleteDoctor = async (req, res) => {
     res.status(200).json(
       new ApiResponse(200, "Doctor deleted successfully", {
         id: doctorId,
-      })
+      }),
     );
   } catch (error) {
-    res
-      .status(500)
-      .json(new ApiResponse(500, "Failed to delete doctor", null));
+    res.status(500).json(new ApiResponse(500, "Failed to delete doctor", null));
   }
 };
 

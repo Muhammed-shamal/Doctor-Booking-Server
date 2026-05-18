@@ -8,10 +8,7 @@ const commonOptions = {
   //cors
   corsOptions: {
     normal: {
-      origin: [
-        "http://localhost:3000",
-        "http://localhost:5173",
-      ],
+      origin: ["http://localhost:3000", "http://localhost:5173"],
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
       credentials: true,
     },
@@ -40,6 +37,17 @@ const commonOptions = {
   },
 
   code: process.env.CODE || "QwertyuioP",
+
+  // Status;
+  VALID_STATUS_TRANSITIONS: {
+    pending: ["confirmed", "cancelled"],
+
+    confirmed: ["completed", "cancelled"],
+
+    completed: [],
+
+    cancelled: [],
+  },
 };
 
 module.exports = commonOptions;

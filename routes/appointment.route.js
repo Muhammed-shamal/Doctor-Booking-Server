@@ -4,9 +4,10 @@ const router = express.Router();
 
 const {
   bookAppointment,
-  getMyAppointments,
+  
   updateAppointmentStatus,
   getAppointmentById,
+  getAppointments,
 } = require("../controllers/appointment.controller");
 
 const authorizeRoles = require("../middlewares/role.middleware");
@@ -103,7 +104,9 @@ router.post(
  *         description: Only patients can access this route
  */
 
-router.get("/my", authorizeRoles("patient"), getMyAppointments);
+router.get("/", getAppointments);
+
+// router.get("/", authorizeRoles("admin"), getAppointments);
 
 router.get("/:id", getAppointmentById);
 
