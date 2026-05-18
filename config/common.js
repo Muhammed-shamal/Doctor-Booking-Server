@@ -8,7 +8,11 @@ const commonOptions = {
   //cors
   corsOptions: {
     normal: {
-      origin: ["http://localhost:3000", "http://localhost:5173"],
+      origin: [
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "https://gregarious-khapse-6c1a00.netlify.app",
+      ],
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
       credentials: true,
     },
@@ -17,6 +21,7 @@ const commonOptions = {
         "http://localhost:5174",
         "http://localhost:3000",
         "http://localhost:5173",
+        "https://gregarious-khapse-6c1a00.netlify.app",
       ],
       methods: ["GET", "POST", "PUT", "PATCH"],
       credentials: true,
@@ -24,14 +29,14 @@ const commonOptions = {
   },
 
   //others
-  clientUrl: process.env.CLIENT_URL || "http://localhost:3000",
+  clientUrl: process.env.CLIENT_URL || "https://gregarious-khapse-6c1a00.netlify.app",
   company: {
     name: process.env.COMPANY_NAME || "Doctor Booking",
     phone: process.env.COMPANY_PHONE || "+91 8304912033",
     address:
       process.env.COMPANY_ADDRESS ||
       "Rumas Quarters Palottupalli Po Mattanur, Kannur District, Kerala- 670702",
-    website: process.env.COMPANY_WEBSITE || "http://localhost:3000",
+    website: process.env.COMPANY_WEBSITE || "https://gregarious-khapse-6c1a00.netlify.app",
     email: process.env.COMPANY_MAIL || "muhammedshamalpv@gmail.com",
     password: process.env.COMPANY_MAIL_PASSWORD || "lutr kmnh gpwz bzgt",
   },
