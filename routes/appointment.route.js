@@ -8,6 +8,7 @@ const {
   updateAppointmentStatus,
   getAppointmentById,
   getAppointments,
+  cancelAppointmentByPatient,
 } = require("../controllers/appointment.controller");
 
 const authorizeRoles = require("../middlewares/role.middleware");
@@ -168,5 +169,7 @@ router.get("/:id", getAppointmentById);
  */
 
 router.patch("/:id/status", authorizeRoles("admin"), updateAppointmentStatus);
+
+router.patch("/:id/status/cancel", authorizeRoles("patient"), cancelAppointmentByPatient);
 
 module.exports = router;

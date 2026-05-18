@@ -265,6 +265,12 @@ const updateAppointmentStatus = async (req, res) => {
       });
     }
 
+    global.io.emit("appointmentUpdated", {
+      appointmentId: appointment._id,
+
+      status: appointment.status,
+    });
+
     return res
       .status(200)
       .json(
@@ -283,6 +289,86 @@ const updateAppointmentStatus = async (req, res) => {
         new ApiResponse(
           error.statusCode || 500,
           error.message || "Failed to update appointment status",
+          null,
+        ),
+      );
+  }
+};
+
+const cancelAppointmentByPatient = async (req, res) => {
+  try {
+    const appointment = await Appointment.findById(req.params.id);
+
+    if (!appointment) {
+      throw new ApiResponse(404, "Appointment not found");
+    }
+
+    // Ensure only patient owner can cancel
+    if (appointment.patient.toString() !== req.user._id.toString()) {
+      throw new ApiResponse(
+        403,
+        "You are not allowed to cancel this appointment",
+      );
+    }
+
+    // Prevent double cancellation
+    if (appointment.status === "cancelled") {
+      throw new ApiResponse(400, "Appointment is already cancelled");
+    }
+
+    // Optional: enforce valid transition rules if you still want them
+    const allowedStatuses = VALID_STATUS_TRANSITIONS[appointment.status] || [];
+
+    if (!allowedStatuses.includes("cancelled")) {
+      throw new ApiResponse(
+        400,
+        `Cannot cancel appointment from ${appointment.status} status`,
+      );
+    }
+
+    // Update status
+    appointment.status = "cancelled";
+    await appointment.save();
+
+    // Release slot
+    await Schedule.updateOne(
+      {
+        _id: appointment.schedule,
+        "slots._id": appointment.slotId,
+      },
+      {
+        $set: {
+          "slots.$.isBooked": false,
+        },
+      },
+    );
+
+    // Real-time update
+    global.io.emit("slotAvailable", {
+      scheduleId: appointment.schedule,
+      slotId: appointment.slotId,
+    });
+
+    global.io.emit("appointmentUpdated", {
+      appointmentId: appointment._id,
+
+      status: appointment.status,
+    });
+
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Appointment cancelled successfully", appointment),
+      );
+  } catch (error) {
+    console.log("Cancel appointment error:", error);
+
+    return res
+      .status(error.statusCode || 500)
+      .json(
+        new ApiResponse(
+          error.statusCode || 500,
+          error.message || "Failed to cancel appointment",
           null,
         ),
       );
@@ -320,4 +406,5 @@ module.exports = {
   // getAppointments,
   getAppointmentById,
   updateAppointmentStatus, //for admin
+  cancelAppointmentByPatient,
 };
