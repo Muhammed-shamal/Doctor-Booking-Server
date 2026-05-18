@@ -154,8 +154,8 @@ const getAdminDashboard = async (req, res) => {
     */
 
   const recentAppointments = await Appointment.find()
-    .populate("doctor", "name specialization")
-    .populate("patient", "name email")
+    .populate("doctor", "fname lname specialization")
+    .populate("patient", "name email phone")
     .sort({
       createdAt: -1,
     })
@@ -200,6 +200,32 @@ const getAdminDashboard = async (req, res) => {
 
     {
       $unwind: "$doctor",
+    },
+
+    {
+      $project: {
+        _id: "$doctor._id",
+
+        totalAppointments: 1,
+
+        rating: {
+          $ifNull: ["$doctor.rating", 0],
+        },
+
+        doctor: {
+          _id: "$doctor._id",
+          fname: "$doctor.fname",
+          lname: "$doctor.lname",
+          specialization: "$doctor.specialization",
+          consultationFee: "$doctor.consultationFee",
+          experience: "$doctor.experience",
+          clinic_name: "$doctor.clinic_name",
+          isActive: "$doctor.isActive",
+          rating: {
+            $ifNull: ["$doctor.rating", 0],
+          },
+        },
+      },
     },
   ]);
 
