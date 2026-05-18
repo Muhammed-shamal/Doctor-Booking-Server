@@ -1,6 +1,6 @@
 const Doctor = require("../models/Doctor");
 const Schedule = require("../models/Schedule");
-const ApiResponse = require("../utils/ApiResponse");
+const ApiResponse = require("../utils/apiResponse");
 const getPaginatedResults = require("../utils/getPaginatedResult");
 
 const getDoctors = async (req, res) => {

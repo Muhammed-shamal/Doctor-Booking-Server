@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/User");
 const generateTokens = require("../utils/generateTokens");
-const ApiResponse = require("../utils/ApiResponse");
+const ApiResponse = require("../utils/apiResponse");
 const commonOptions = require("../config/common");
 const sendEmail = require("../services/mail");
 const { generateResetPasswordEmail } = require("../utils/emailTemplate");

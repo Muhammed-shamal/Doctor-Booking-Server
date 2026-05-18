@@ -6,7 +6,7 @@ const User = require("../models/User");
 
 const asyncHandler = require("../utils/asyncHandler");
 
-const ApiResponse = require("../utils/ApiResponse");
+const ApiResponse = require("../utils/apiResponse");
 
 const getDashboardData = asyncHandler(async (req, res) => {
   /*
