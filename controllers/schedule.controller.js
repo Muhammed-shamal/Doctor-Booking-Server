@@ -5,7 +5,8 @@ const getPaginatedResults = require("../utils/getPaginatedResult");
 
 const createSchedule = async (req, res) => {
   try {
-    const { doctor, date, startTime, endTime, slotDuration } = req.body;
+    const { doctor, date, startTime, endTime } = req.body;
+    console.log("schedule data is", req.body);
 
     const existingSchedule = await Schedule.findOne({
       doctor,
@@ -20,7 +21,10 @@ const createSchedule = async (req, res) => {
         );
     }
 
+    const slotDuration = Number(req.body.slotDuration);
     const slots = generateSlots(startTime, endTime, slotDuration);
+
+    console.log('slots is',slots);
 
     const schedule = await Schedule.create({
       doctor,

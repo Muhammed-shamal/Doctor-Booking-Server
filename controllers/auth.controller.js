@@ -37,16 +37,23 @@ const register = async (req, res) => {
 
     const { accessToken, refreshToken } = generateTokens(user);
 
+    const isProd = process.env.NODE_ENV === "production";
+
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure,
-      sameSite,
-      path:'/',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+
+      secure: isProd,
+
+      sameSite: isProd ? "None" : "Lax",
+
+      path: "/",
+
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.status(201).json(new ApiResponse(201, "User registered successfully"));
   } catch (error) {
+    console.log("error is", error);
     res.status(500).json(new ApiResponse(500, "Failed to register user", null));
   }
 };
@@ -88,8 +95,8 @@ const devRegister = async (req, res) => {
       secure: isProd,
 
       sameSite: isProd ? "None" : "Lax",
-      
-      path:'/',
+
+      path: "/",
 
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -181,7 +188,7 @@ const refresh = async (req, res) => {
       secure: isProd,
 
       sameSite: isProd ? "None" : "Lax",
-      path:'/',
+      path: "/",
 
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });

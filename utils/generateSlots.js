@@ -1,40 +1,33 @@
-const generateSlots = (
-  startTime,
-  endTime,
-  slotDuration
-) => {
+const generateSlots = (startTime, endTime, slotDuration) => {
   const slots = [];
 
-  const start = new Date(
-    `2000-01-01 ${startTime}`
-  );
+  const start = new Date(`2000-01-01 ${startTime}`);
 
-  const end = new Date(
-    `2000-01-01 ${endTime}`
-  );
+  const end = new Date(`2000-01-01 ${endTime}`);
 
   while (start < end) {
     const slotStart = new Date(start);
 
-    start.setMinutes(
-      start.getMinutes() + slotDuration
-    );
+    const next = new Date(start);
+    next.setMinutes(next.getMinutes() + slotDuration);
 
-    const slotEnd = new Date(start);
+    if (next > end) break;
 
     slots.push({
       startTime: slotStart.toLocaleTimeString([], {
         hour: "2-digit",
-        minute: "2-digit"
+        minute: "2-digit",
       }),
 
-      endTime: slotEnd.toLocaleTimeString([], {
+      endTime: next.toLocaleTimeString([], {
         hour: "2-digit",
-        minute: "2-digit"
+        minute: "2-digit",
       }),
 
-      isBooked: false
+      isBooked: false,
     });
+
+    start.setMinutes(start.getMinutes() + slotDuration);
   }
 
   return slots;
